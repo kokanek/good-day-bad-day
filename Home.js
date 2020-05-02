@@ -95,8 +95,8 @@ export default class Home extends Component {
             {this.state.addTask && 
               <ListItem icon>
                 <Left>
-                <Button style={{ backgroundColor: (this.state.inputTaskSev == 'small') ? "#ffec3d" : (this.state.inputTaskSev == 'medium') ? "#ffa940" : "#ff4d4f" }} 
-                  onPress={() => this.setState({ inputTaskSev: nextSevState[this.state.inputTaskSev]})}>
+                  <Button style={{ backgroundColor: (this.state.inputTaskSev == 'small') ? "#ffec3d" : (this.state.inputTaskSev == 'medium') ? "#ffa940" : "#ff4d4f" }} 
+                    onPress={() => this.setState({ inputTaskSev: nextSevState[this.state.inputTaskSev]})}>
                     <Icon type="FontAwesome5" name="star" />
                   </Button>
                 </Left>

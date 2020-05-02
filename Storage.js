@@ -28,3 +28,21 @@ export async function getData(date) {
     return Promise.resolve([]);
   }
 }
+
+export async function getAllData() {
+  let keys = [];
+  let values = [];
+  let result = {};
+
+  try {
+    keys = await AsyncStorage.getAllKeys();
+    values = await AsyncStorage.multiGet(keys || []);
+    values.forEach(async val => {
+      result[val[0]] = await JSON.parse(val[1]);
+    })
+    return result;
+  } catch (e) {
+    // read key error
+    return [];
+  }
+}
