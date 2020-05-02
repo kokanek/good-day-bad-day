@@ -1,12 +1,23 @@
-import React, { Component } from 'react'
-import { Text } from 'native-base';
+import React, { Component } from 'react';
+import { StyleSheet } from 'react-native';
+import {
+  Container, Header
+} from 'native-base';
 
 export default class Summary extends Component {
   render() {
     return (
-      <Text>
-        This is summary page
-      </Text>
+      <Container>
+        <Header style={styles.header} androidStatusBarColor="#ffffff">
+        </Header>
+      </Container>
     )
   }
 }
+
+const styles = StyleSheet.create({
+  header: {
+    backgroundColor: '#ffffff',
+    display: 'none'
+  },
+})

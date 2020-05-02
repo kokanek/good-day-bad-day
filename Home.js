@@ -37,7 +37,8 @@ export default class Home extends Component {
     const newTask = {
       id: this.getId(),
       task: this.state.inputTask,
-      size: this.state.inputTaskSev
+      size: this.state.inputTaskSev,
+      done: false
     }
 
     this.setState({ 
@@ -47,6 +48,17 @@ export default class Home extends Component {
     }, () => {
       setData(this.state.date, this.state.todaysTasks);
     });
+  }
+
+  checkboxChanged = (t) => {
+    let tasks = [...this.state.todaysTasks];
+    tasks.forEach(task => {
+      if (task.id === t.id) {
+        task.done = !t.done;
+      }
+    })
+
+    this.setState({todaysTasks: tasks});
   }
 
   async componentDidMount() {
@@ -109,7 +121,7 @@ export default class Home extends Component {
                     <Text>{task.task}</Text>
                   </Body>
                   <Right>
-                    <CheckBox checked={false} />
+                    <CheckBox checked={task.done} onPress={() => this.checkboxChanged(task)}/>
                   </Right>
                 </ListItem>
               );
