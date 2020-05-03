@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Root } from "native-base";
 import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
 import { NavigationContainer } from '@react-navigation/native';
@@ -33,12 +34,14 @@ export default class App extends React.Component {
     }
 
     return (
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="Home" component={Home} />
-          <Stack.Screen name="Summary" component={Summary} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <Root>
+        <NavigationContainer>
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="Home" component={Home} />
+            <Stack.Screen name="Summary" component={Summary} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </Root>
     );
   }
 }

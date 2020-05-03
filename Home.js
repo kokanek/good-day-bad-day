@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
   Container, Header, Body, Right, Left, Button, Icon, Title, List,
-  ListItem, Text, Content, CheckBox, Item, Input
+  ListItem, Text, Content, CheckBox, Item, Input, Toast
 } from 'native-base';
 import { getData, setData } from './Storage';
 import { formatDate } from './utils';
@@ -47,6 +47,25 @@ export default class Home extends Component {
       addTask: false
     }, () => {
       setData(this.state.date, this.state.todaysTasks);
+      Toast.show({
+        text: "Task added!",
+        buttonText: "Okay",
+        duration: 1000
+      });
+    });
+  }
+
+  deleteTask = (t) => {
+    let tasks = [...this.state.todaysTasks];
+    tasks = tasks.filter(task => task.id !== t.id);
+
+    this.setState({ todaysTasks: tasks }, () => {
+      setData(this.state.date, this.state.todaysTasks);
+      Toast.show({
+        text: "Task deleted!",
+        buttonText: "Okay",
+        duration: 1000
+      });
     });
   }
 
@@ -58,7 +77,9 @@ export default class Home extends Component {
       }
     })
 
-    this.setState({todaysTasks: tasks});
+    this.setState({todaysTasks: tasks}, () => {
+      setData(this.state.date, this.state.todaysTasks);
+    });
   }
 
   async componentDidMount() {
@@ -97,7 +118,7 @@ export default class Home extends Component {
                 <Left>
                   <Button style={{ backgroundColor: (this.state.inputTaskSev == 'small') ? "#ffec3d" : (this.state.inputTaskSev == 'medium') ? "#ffa940" : "#ff4d4f" }} 
                     onPress={() => this.setState({ inputTaskSev: nextSevState[this.state.inputTaskSev]})}>
-                    <Icon type="FontAwesome5" name="star" />
+                    <Icon type="FontAwesome5" name="suitcase" />
                   </Button>
                 </Left>
                 <Body>
@@ -111,10 +132,10 @@ export default class Home extends Component {
             }
             {this.state.todaysTasks.map(task => {
               return (
-                <ListItem icon key={task.task} onLongPress={() => alert('Are you sure you want to delete this?')}>
+                <ListItem icon key={task.task} onLongPress={() => this.deleteTask(task)}>
                   <Left>
                     <Button style={{ backgroundColor: (task.size == 'small') ? "#ffec3d" : (task.size == 'medium')? "#ffa940" : "#ff4d4f"}}>
-                      <Icon type="FontAwesome5" name="star" />
+                      <Icon type="MaterialIcons" name="work" />
                     </Button>
                   </Left>
                   <Body>
