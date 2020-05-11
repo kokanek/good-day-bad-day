@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import {
   Container, Header, Body, Right, Left, Button, Icon, Title, List,
   ListItem, Text, Content, CheckBox, Item, Input, Toast, Badge, ScrollableTab
@@ -105,18 +105,22 @@ export default class Home extends Component {
         <Header style={styles.header} androidStatusBarColor="#393D5E">
         </Header>
         <Content style={styles.content}>
-          <List>
-            <ListItem itemHeader first>
-              <Text>TODAYS TASKS</Text>
-              <Button transparent onPress={() => this.setState(({addTask}) => ({addTask: !addTask}))}>
-                <Icon name='add' />
-              </Button>
+          <View style={{padding: 20}}>
+            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={{fontSize: 40, color: '#efefefaa'}}>TODAYS TASKS</Text>
+            </View>
+            <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: 10}}>
+              <Text style={{fontSize: 60, color: '#efefef'}}>10</Text>
+              <View style={{marginLeft: 5}}>
+                <Text style={{ fontSize: 24, color: '#efefef' }}>March</Text>
+                <Text style={{ fontSize: 24, color: '#efefef' }}>Wednesday</Text>
+              </View>
               <Right>
-                <Button transparent onPress={() => this.props.navigation.navigate("Summary")}>
-                  <Icon name='calendar' />
-                </Button>
+                <Icon style={{ fontSize: 40, color: '#efefef' }} name="calendar" onPress={() => this.props.navigation.navigate("Summary")} />
               </Right>
-            </ListItem>
+            </View>
+          </View>
+          <List>
             {this.state.addTask && 
               <ListItem icon>
                 <Left>
@@ -134,13 +138,13 @@ export default class Home extends Component {
             }
             {this.state.todaysTasks.map(task => {
               return (
-                <View style={styles.item} key={task.task} onLongPress={() => this.deleteTask(task)}>
+                <TouchableOpacity style={styles.item} key={task.task} onLongPress={() => this.deleteTask(task)}>
                   <View style={{ display: 'flex', flexDirection: 'row' }}>
                     <Badge style={{ marginRight: 10, backgroundColor: (task.size == 'small') ? "#ffec3d" : (task.size == 'medium') ? "#ffa940" : "#ff4d4f" }}></Badge>
-                    <Text style={{ color: '#efefef', textDecorationLine: 'none' }}>{task.task}</Text>
+                    <Text style={{ color: '#efefef', textDecorationLine: task.done ? 'line-through' : 'none'}}>{task.task}</Text>
                   </View>
                   <CheckBox style={{ marginRight: 10 }} checked={task.done} onPress={() => this.checkboxChanged(task)} />
-                </View>
+                </TouchableOpacity>
               );
             })}
           </List>
@@ -150,7 +154,7 @@ export default class Home extends Component {
           
           
         </Content>
-        <Button style={styles.floatingButton}>
+        <Button style={styles.floatingButton} onPress={() => this.setState(({ addTask }) => ({ addTask: !addTask }))}>
           <Icon name='add' />
         </Button>
       </Container>
@@ -170,7 +174,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     borderRadius: 10,
     marginLeft: 20,
-    marginTop: 10
+    marginTop: 10,
   },
   floatingButton: {
     position: 'absolute',
