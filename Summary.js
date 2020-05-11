@@ -7,10 +7,18 @@ import { getAllData } from './Storage';
 
 export default class Summary extends Component {
 
+  constructor() {
+    super();
+
+    this.state = {
+      allTasks: []
+    }
+  }
+
   async componentDidMount() {
     const tasks = await getAllData();
     console.log('all data: ', tasks);
-    this.setState({ todaysTasks: tasks })
+    this.setState({ allTasks: tasks })
   }
 
   render() {
@@ -24,68 +32,65 @@ export default class Summary extends Component {
               <Text>ALL DAYS</Text>
             </ListItem>
           </List>
-          <Card style={{ backgroundColor: '#ff4d4f' }}>
-            <CardItem header>
-              <Text>23 April, 2020</Text>
-            </CardItem>
-            <CardItem>
-              <Icon type="AntDesign" name="star" />
-              <Icon type="AntDesign" name="star" />
-              <Icon type="AntDesign" name="star" />
-              <Icon type="AntDesign" name="star" />
-              <Icon type="AntDesign" name="star" />
-              <Icon type="AntDesign" name="staro" />
-              <Icon type="AntDesign" name="staro" />
-              <Right>
-                <Text style={{ fontWeight: '800', fontSize: 24 }}>3.5</Text>
-              </Right>
-            </CardItem>
-            <CardItem style={styles.cardItem}>
-              <Button style={{ backgroundColor: "#ff4d4f" }}>
-                <Icon type="FontAwesome5" name="suitcase" />
-              </Button>
-              <Text style={{ fontWeight: '700' }}>2/3</Text>
-              <Button style={{ backgroundColor: "#ffa940" }}>
-                <Icon type="FontAwesome5" name="suitcase" />
-              </Button>
-              <Text style={{ fontWeight: '700' }}>4/5</Text>
-              <Button style={{ backgroundColor: "#ffec3d" }}>
-                <Icon type="FontAwesome5" name="suitcase" />
-              </Button>
-              <Text style={{ fontWeight: '700' }}>2/3</Text>
-            </CardItem>
-          </Card>
-          <Card style={{ backgroundColor: '#ff4d4f' }}>
-            <CardItem header>
-              <Text>23 April, 2020</Text>
-            </CardItem>
-            <CardItem>
-              <Icon type="AntDesign" name="star" style={{ color: '#ff7a45ff'}}/>
-              <Icon type="AntDesign" name="star" style={{ color: '#ff7a45ff' }}/>
-              <Icon type="AntDesign" name="star" style={{ color: '#ff7a45ff' }}/>
-              <Icon type="AntDesign" name="star" style={{ color: '#ff7a45ff' }}/>
-              <Icon type="AntDesign" name="star" style={{ color: '#ff7a45ff' }}/>
-              <Icon type="AntDesign" name="staro" style={{ color: '#ff7a45ff' }}/>
-                <Icon type="AntDesign" name="staro" style={{ color: '#ff7a45ff' }}/>
-              <Right>
-                <Text style={{ fontWeight: '500', fontSize: 30, color: '#ff7a45ff' }}>3.5</Text>
-              </Right>
-            </CardItem>
-            <CardItem style={styles.cardItem}>
-              <Button style={{ backgroundColor: "#ff4d4f" }}>
-                <Icon type="FontAwesome5" name="suitcase" />
-              </Button>
-              <Text style={{fontWeight:'700'}}>2/3</Text>
-              <Button style={{ backgroundColor: "#ffa940" }}>
-                <Icon type="FontAwesome5" name="suitcase" />
-              </Button>
-              <Text style={{ fontWeight: '700' }}>4/5</Text>
-              <Button style={{ backgroundColor: "#ffec3d" }}>
-                <Icon type="MaterialIcons" name="work" />
-              </Button>
-              <Text style={{ fontWeight: '700' }}>2/3</Text>
-            </CardItem>
-          </Card>
+          {this.state.allTasks.map(task => 
+            {
+              const { date, totalTasks, completedTasks,
+                smallTasks, mediumTasks, largeTasks,
+                smallDone, mediumDone, largeDone } = task;
+              
+              let ratio = 0;
+              let stars = 0;
+              if (totalTasks !== 0) {
+                ratio = (completedTasks/totalTasks).toFixed(1);
+                stars = Math.round(ratio*7);
+              }
+
+              const starArr1 = [];
+              const starArr2 = [];
+
+              for(let i = 0; i<stars; i++) {
+                starArr1.push('*');
+              }
+
+              for(let i = 0; i<7-stars; i++) {
+                starArr2.push('*');
+              }
+
+              console.log('array 1 and 2: ', starArr1, starArr2);
+
+              return (
+              <Card style={{ backgroundColor: '#ff4d4f' }}>
+                <CardItem header>
+                  <Text style={{ fontWeight: '500', fontSize: 24, color: '#00000088'}}>{date}</Text>
+                </CardItem>
+                <CardItem>
+                  {starArr1.map(() =>
+                    <Icon type="AntDesign" name="star" style={{ color: '#ff7a45ff'}}/>
+                  )}
+                  {starArr2.map(() => 
+                    <Icon type="AntDesign" name="staro" style={{ color: '#ff7a45ff' }} />
+                  )}
+                  <Right>
+                    <Text style={{ fontWeight: '500', fontSize: 30, color: '#ff7a45ff' }}>{stars}</Text>
+                  </Right>
+                </CardItem>
+                <CardItem style={styles.cardItem}>
+                  <Button iconLeft style={{ backgroundColor: "#ff4d4f" }}>
+                    <Icon type="Foundation" name="clipboard-pencil" />
+                      <Text style={{ fontWeight: '700', color: '#ffffff' }}>{`${smallDone}/${smallTasks}`}</Text>
+                  </Button>
+                  <Button iconLeft style={{ backgroundColor: "#ffa940" }}>
+                    <Icon type="Foundation" name="clipboard-pencil" />
+                      <Text style={{ fontWeight: '700', color: '#ffffff' }}>{`${mediumDone}/${mediumTasks}`}</Text>
+                  </Button>
+                  <Button iconLeft style={{ backgroundColor: "#ffec3d" }}>
+                    <Icon type="Foundation" name="clipboard-pencil" />
+                      <Text style={{ fontWeight: '700', color: '#ffffff' }}>{`${largeDone}/${largeTasks}`}</Text>
+                  </Button>
+                </CardItem>
+              </Card>)
+              }
+          )}
         </Content>
       </Container>
     )
@@ -98,12 +103,11 @@ const styles = StyleSheet.create({
     display: 'none'
   },
   content: {
-    width: '95%',
     padding: '5%'
   },
   cardItem: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'flex-start',
   }
 })

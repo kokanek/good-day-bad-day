@@ -5,6 +5,10 @@
     "name": "goodDay",
     "slug": "goodDay",
     "version": "1.0.0",
+    "android": {
+      "package": "com.studios.simplyaddictive",
+      "versionCode": 1
+    },
     "platforms": [
       "ios",
       "android",
@@ -12,6 +16,10 @@
     ],
     "assetBundlePatterns": [
       "**/*"
-    ]
+    ],
+    "ios": {
+      "bundleIdentifier": "bundle"
+    },
+    "entryPoint": "node_modules/expo/AppEntry.js"
   }
 }

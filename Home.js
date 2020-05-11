@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
   Container, Header, Body, Right, Left, Button, Icon, Title, List,
-  ListItem, Text, Content, CheckBox, Item, Input, Toast
+  ListItem, Text, Content, CheckBox, Item, Input, Toast, Badge, ScrollableTab
 } from 'native-base';
 import { getData, setData } from './Storage';
 import { formatDate } from './utils';
@@ -34,6 +34,10 @@ export default class Home extends Component {
   }
 
   addTask = () => {
+    if (this.state.inputTask.trim() == '') {
+      return
+    }
+    
     const newTask = {
       id: this.getId(),
       task: this.state.inputTask,
@@ -98,7 +102,7 @@ export default class Home extends Component {
   render() {
     return (
       <Container>
-        <Header style={styles.header} androidStatusBarColor="#ffffff">
+        <Header style={styles.header} androidStatusBarColor="#393D5E">
         </Header>
         <Content style={styles.content}>
           <List>
@@ -118,51 +122,69 @@ export default class Home extends Component {
                 <Left>
                   <Button style={{ backgroundColor: (this.state.inputTaskSev == 'small') ? "#ffec3d" : (this.state.inputTaskSev == 'medium') ? "#ffa940" : "#ff4d4f" }} 
                     onPress={() => this.setState({ inputTaskSev: nextSevState[this.state.inputTaskSev]})}>
-                    <Icon type="FontAwesome5" name="suitcase" />
+                    <Icon type="Foundation" name="clipboard-pencil" />
                   </Button>
                 </Left>
                 <Body>
                 <Input placeholder='Enter task' value={this.state.inputTask} onChange={(e) => this.setState({ inputTask: e.nativeEvent.text})}/>
                 </Body>
-                <Right>
-                  <Icon type="MaterialIcons" name="add-box" 
-                    style={{color: '#4710ff', fontSize: 40, margin: 0}} onPress={this.addTask}/>
-                </Right>
+                <Icon type="MaterialIcons" name="add-box" 
+                  style={{color: '#4710ff', fontSize: 40, margin: 0}} onPress={this.addTask}/>
               </ListItem>
             }
             {this.state.todaysTasks.map(task => {
               return (
-                <ListItem icon key={task.task} onLongPress={() => this.deleteTask(task)}>
-                  <Left>
-                    <Button style={{ backgroundColor: (task.size == 'small') ? "#ffec3d" : (task.size == 'medium')? "#ffa940" : "#ff4d4f"}}>
-                      <Icon type="MaterialIcons" name="work" />
-                    </Button>
-                  </Left>
-                  <Body>
-                    <Text>{task.task}</Text>
-                  </Body>
-                  <Right>
-                    <CheckBox checked={task.done} onPress={() => this.checkboxChanged(task)}/>
-                  </Right>
-                </ListItem>
+                <View style={styles.item} key={task.task} onLongPress={() => this.deleteTask(task)}>
+                  <View style={{ display: 'flex', flexDirection: 'row' }}>
+                    <Badge style={{ marginRight: 10, backgroundColor: (task.size == 'small') ? "#ffec3d" : (task.size == 'medium') ? "#ffa940" : "#ff4d4f" }}></Badge>
+                    <Text style={{ color: '#efefef', textDecorationLine: 'none' }}>{task.task}</Text>
+                  </View>
+                  <CheckBox style={{ marginRight: 10 }} checked={task.done} onPress={() => this.checkboxChanged(task)} />
+                </View>
               );
             })}
           </List>
           <View style={styles.deleteText}>
             <Text style={{ color: '#01010155' }}>Long click to delete</Text>
           </View>
+          
+          
         </Content>
+        <Button style={styles.floatingButton}>
+          <Icon name='add' />
+        </Button>
       </Container>
     )
   }
 }
 
 const styles = StyleSheet.create({
+  item: {
+    backgroundColor: '#3F4674',
+    height: 60,
+    color: '#efefef',
+    padding: 10,
+    display: 'flex', 
+    flexDirection: 'row',
+    alignItems: 'center', // #5C89C3
+    justifyContent: 'space-between',
+    borderRadius: 10,
+    marginLeft: 20,
+    marginTop: 10
+  },
+  floatingButton: {
+    position: 'absolute',
+    bottom: '10%',
+    left: '42%',
+    borderRadius: 40,
+  },
   content: {
-    width: '95%'
+    width: '95%',
+    backgroundColor: '#393D5E',
+    color: '#efefef'
   },
   header: {
-    backgroundColor: '#ffffff', 
+    backgroundColor: '#393D5E', 
     display: 'none'
   },
   right: {
