@@ -44,17 +44,7 @@ export async function getAllData() {
       const totalTasks = allTasks.length;
       const completedTasks = allTasks.filter(task => task.done === true).length;
 
-      const smallTasks = countTasks(allTasks, "small");
-      const mediumTasks = countTasks(allTasks, "medium");
-      const largeTasks = countTasks(allTasks, "large");
-
-      const smallDone = countTasks(allTasks, "small", true);
-      const mediumDone = countTasks(allTasks, "medium", true);
-      const largeDone = countTasks(allTasks, "large", true);
-
-      result.push({date, totalTasks, completedTasks, 
-        smallTasks, mediumTasks, largeTasks,
-        smallDone, mediumDone, largeDone});
+      result.push({date, totalTasks, completedTasks});
     })
     return result;
   } catch (e) {

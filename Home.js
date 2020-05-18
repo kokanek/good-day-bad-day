@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import {
-  Container, Header, Body, Right, Left, Button, Icon, Title, List,
+  Container, Header, Body, Right, Left, Button, Icon, Radio, List,
   ListItem, Text, Content, CheckBox, Item, Input, Toast, Badge, ScrollableTab
 } from 'native-base';
 import { getData, setData } from './Storage';
-import { formatDate } from './utils';
+import { getDateInfo } from './utils';
 
 const nextSevState = {
   'small': 'medium',
@@ -14,6 +14,7 @@ const nextSevState = {
 }
 
 export default class Home extends Component {
+
   constructor(props) {
     super(props);
     const todaysDate = new Date();
@@ -21,7 +22,8 @@ export default class Home extends Component {
       todaysTasks: [],
       inputTask: '',
       inputTaskSev: 'small',
-      date: todaysDate
+      date: todaysDate,
+      today: getDateInfo(todaysDate)
     };
   }
 
@@ -46,7 +48,7 @@ export default class Home extends Component {
     }
 
     this.setState({ 
-      todaysTasks: [newTask, ...this.state.todaysTasks],
+      todaysTasks: [...this.state.todaysTasks, newTask],
       inputTask: '',
       addTask: false
     }, () => {
@@ -100,6 +102,7 @@ export default class Home extends Component {
   }
 
   render() {
+    const { today } = this.state;
     return (
       <Container>
         <Header style={styles.header} androidStatusBarColor="#393D5E">
@@ -110,10 +113,10 @@ export default class Home extends Component {
               <Text style={{fontSize: 40, color: '#efefefaa'}}>TODAYS TASKS</Text>
             </View>
             <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: 10}}>
-              <Text style={{fontSize: 60, color: '#efefef'}}>10</Text>
+              <Text style={{ fontSize: 60, color: '#efefef' }}>{today.date}</Text>
               <View style={{marginLeft: 5}}>
-                <Text style={{ fontSize: 24, color: '#efefef' }}>March</Text>
-                <Text style={{ fontSize: 24, color: '#efefef' }}>Wednesday</Text>
+                <Text style={{ fontSize: 24, color: '#efefefdd' }}>{today.month}</Text>
+                <Text style={{ fontSize: 24, color: '#efefef88' }}>{today.day}</Text>
               </View>
               <Right>
                 <Icon style={{ fontSize: 40, color: '#efefef' }} name="calendar" onPress={() => this.props.navigation.navigate("Summary")} />
@@ -121,25 +124,11 @@ export default class Home extends Component {
             </View>
           </View>
           <List>
-            {this.state.addTask && 
-              <ListItem icon>
-                <Left>
-                  <Button style={{ backgroundColor: (this.state.inputTaskSev == 'small') ? "#ffec3d" : (this.state.inputTaskSev == 'medium') ? "#ffa940" : "#ff4d4f" }} 
-                    onPress={() => this.setState({ inputTaskSev: nextSevState[this.state.inputTaskSev]})}>
-                    <Icon type="Foundation" name="clipboard-pencil" />
-                  </Button>
-                </Left>
-                <Body>
-                <Input placeholder='Enter task' value={this.state.inputTask} onChange={(e) => this.setState({ inputTask: e.nativeEvent.text})}/>
-                </Body>
-                <Icon type="MaterialIcons" name="add-box" 
-                  style={{color: '#4710ff', fontSize: 40, margin: 0}} onPress={this.addTask}/>
-              </ListItem>
-            }
+            
             {this.state.todaysTasks.map(task => {
               return (
                 <TouchableOpacity style={styles.item} key={task.task} onLongPress={() => this.deleteTask(task)}>
-                  <View style={{ display: 'flex', flexDirection: 'row' }}>
+                  <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                     <Badge style={{ marginRight: 10, backgroundColor: (task.size == 'small') ? "#ffec3d" : (task.size == 'medium') ? "#ffa940" : "#ff4d4f" }}></Badge>
                     <Text style={{ color: '#efefef', textDecorationLine: task.done ? 'line-through' : 'none'}}>{task.task}</Text>
                   </View>
@@ -147,6 +136,34 @@ export default class Home extends Component {
                 </TouchableOpacity>
               );
             })}
+            {this.state.addTask &&
+              <View>
+              <View style={styles.addItem}>
+                  <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', width: 300 }}>
+                    <Badge style={{ marginRight: 10, alignSelf: 'center', backgroundColor: (this.state.inputTaskSev == 'small') ? "#ffec3d" : (this.state.inputTaskSev == 'medium') ? "#ffa940" : "#ff4d4f" }}></Badge>
+                    {/* <Text style={{ color: '#efefef', textDecorationLine: 'none' }}></Text> */}
+                    <Input
+                      style={{ color: '#ffffff', width: '70%' }}
+                      placeholder='Enter task'
+                      value={this.state.inputTask}
+                      onChange={(e) => this.setState({ inputTask: e.nativeEvent.text })}
+                      onSubmitEditing={() => { this.addTask }}
+                    />
+                  </View>
+                  <Right>
+                    <Icon type="MaterialIcons" name="add-box" style={{ color: '#efefefaa', fontSize: 40 }} onPress={this.addTask} />
+                  </Right>
+                </View>
+              <View style={{ ...styles.addItem, marginTop: 0}}>
+                <Badge style={{ alignSelf: 'center', backgroundColor: "#ffec3d" }}></Badge>
+                <Text style={{ color: '#efefef', fontWeight: this.state.inputTaskSev === 'small' ? 'bold' : '' }} onPress={() => this.setState({ inputTaskSev: 'small'})}>Small</Text>
+                <Badge style={{ alignSelf: 'center', backgroundColor: "#ffa940" }}></Badge>
+                <Text style={{ color: '#efefef', fontWeight: this.state.inputTaskSev === 'medium' ? 'bold' : '' }} onPress={() => this.setState({ inputTaskSev: 'medium' })}>Medium</Text>
+                <Badge style={{ alignSelf: 'center', backgroundColor: "#ff4d4f" }}></Badge>
+                <Text style={{ color: '#efefef', fontWeight: this.state.inputTaskSev === 'large' ? 'bold' : '' }} onPress={() => this.setState({ inputTaskSev: 'large' })}>Large</Text>
+                </View>
+              </View>
+            }
           </List>
           <View style={styles.deleteText}>
             <Text style={{ color: '#01010155' }}>Long click to delete</Text>
@@ -154,7 +171,10 @@ export default class Home extends Component {
           
           
         </Content>
-        <Button style={styles.floatingButton} onPress={() => this.setState(({ addTask }) => ({ addTask: !addTask }))}>
+        <Button style={styles.floatingButton} 
+          onPress={() => {
+            this.setState(({ addTask }) => ({ addTask: !addTask }))
+          }}>
           <Icon name='add' />
         </Button>
       </Container>
@@ -175,6 +195,19 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginLeft: 20,
     marginTop: 10,
+  },
+  addItem: {
+    backgroundColor: '#3F4674',
+    height: 60,
+    color: '#efefef',
+    padding: 10,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center', // #5C89C3
+    justifyContent: 'space-between',
+    marginLeft: 20,
+    marginTop: 10,
+    color: '#efefef'
   },
   floatingButton: {
     position: 'absolute',

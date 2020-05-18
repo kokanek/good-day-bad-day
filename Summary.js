@@ -4,14 +4,16 @@ import {
   Container, Header, List, ListItem, Text, Left, Body, Icon, Badge, Button,
   Card, CardItem, Content, Right } from 'native-base';
 import { getAllData } from './Storage';
+import { getMonthInfo, beautifyDate } from './utils';
 
 export default class Summary extends Component {
 
   constructor() {
     super();
-
+    const todaysDate = new Date(); 
     this.state = {
-      allTasks: []
+      allTasks: [],
+      info: getMonthInfo(todaysDate)
     }
   }
 
@@ -22,6 +24,7 @@ export default class Summary extends Component {
   }
 
   render() {
+    const {info} = this.state;
     return (
       <Container>
         <Content style={styles.content}>
@@ -32,8 +35,8 @@ export default class Summary extends Component {
               <Text style={{ fontSize: 40, color: '#efefefaa' }}>SUMMARY</Text>
             </View>
             <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-              <Text style={{ fontSize: 36, color: '#efefef', fontWeight: 'bold' }}>March </Text>
-              <Text style={{ fontSize: 36, color: '#efefef' }}>| 2020</Text>
+              <Text style={{ fontSize: 36, color: '#efefef', fontWeight: 'bold' }}>{info.month} </Text>
+              <Text style={{ fontSize: 36, color: '#efefef' }}>| {info.year}</Text>
             </View>
           </View>
           {this.state.allTasks.map(task => 
@@ -52,7 +55,7 @@ export default class Summary extends Component {
                   <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
                     <Badge style={{ marginRight: 10, display: 'flex', flexDirection: 'row' }} success><Icon name='star' style={{ fontSize: 18, color: 'white' }}/><Text>{stars}</Text></Badge>
                     <View>
-                      <Text style={{ color: '#efefef', fontWeight: 'bold', fontSize: 18 }}>{date}</Text>
+                      <Text style={{ color: '#efefef', fontWeight: 'bold', fontSize: 18 }}>{beautifyDate(date)}</Text>
                       <Text style={{ color: '#efefef', fontSize: 12 }}>{`${completedTasks} of ${totalTasks} tasks completed`}</Text>
                     </View>
                     <Right>
