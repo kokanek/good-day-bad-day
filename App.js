@@ -7,6 +7,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 import Home from './Home';
 import Summary from './Summary';
+import Review from './Review';
 //import styles from './styles';
 
 export default class App extends React.Component {
@@ -39,6 +40,7 @@ export default class App extends React.Component {
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Home" component={Home} />
             <Stack.Screen name="Summary" component={Summary} />
+            <Stack.Screen name="Review" component={Review} />
           </Stack.Navigator>
         </NavigationContainer>
       </Root>

@@ -1,23 +1,21 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import {
-  Container, Header, Body, Right, Left, Button, Icon, Radio, List,
+  Container, Header, Picker, Right, Left, Button, Icon, Radio, List,
   ListItem, Text, Content, CheckBox, Item, Input, Toast, Badge, ScrollableTab
 } from 'native-base';
 import { getData, setData } from './Storage';
 import { getDateInfo } from './utils';
-
-const nextSevState = {
-  'small': 'medium',
-  'medium': 'large',
-  'large': 'small'
-}
 
 export default class Home extends Component {
 
   constructor(props) {
     super(props);
     const todaysDate = new Date();
+    this._onFocusListener = this.props.navigation.addListener('didFocus', (payload) => {
+      console.log('on focus listener');
+      this.getData();
+    });
     this.state = {
       todaysTasks: [],
       inputTask: '',
@@ -88,14 +86,22 @@ export default class Home extends Component {
     });
   }
 
+  getData = () => {
+    Toast.show({
+      text: "Tasks refreshed!",
+      buttonText: "Okay",
+      duration: 500
+    });
+    getData(this.state.date)
+      .then(tasks => this.setState({ todaysTasks: tasks }));
+  }
+
   async componentDidMount() {
-    const tasks = await getData(this.state.date);
-    this.setState({ todaysTasks: tasks})
+    this.getData();
   }
 
   async componentDidUpdate(nextProps, prevState) {
     let tasks = await getData(prevState.date);
-    console.log('date in did update: ', prevState.date, tasks);
     return {
       todaysTasks: tasks
     }
@@ -111,6 +117,9 @@ export default class Home extends Component {
           <View style={{padding: 20}}>
             <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
               <Text style={{fontSize: 40, color: '#efefefaa'}}>TODAYS TASKS</Text>
+              <Right>
+                <Icon style={{ fontSize: 36, color: '#efefefaa' }} name="refresh" onPress={() => this.getData()} />
+              </Right>
             </View>
             <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: 10}}>
               <Text style={{ fontSize: 60, color: '#efefef' }}>{today.date}</Text>
@@ -127,7 +136,7 @@ export default class Home extends Component {
             
             {this.state.todaysTasks.map(task => {
               return (
-                <TouchableOpacity style={styles.item} key={task.task} onLongPress={() => this.deleteTask(task)}>
+                <TouchableOpacity style={styles.item} key={task.id} onLongPress={() => this.deleteTask(task)}>
                   <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                     <Badge style={{ marginRight: 10, backgroundColor: (task.size == 'small') ? "#ffec3d" : (task.size == 'medium') ? "#ffa940" : "#ff4d4f" }}></Badge>
                     <Text style={{ color: '#efefef', textDecorationLine: task.done ? 'line-through' : 'none'}}>{task.task}</Text>
@@ -151,32 +160,46 @@ export default class Home extends Component {
                     />
                   </View>
                   <Right>
-                    <Icon type="MaterialIcons" name="add-box" style={{ color: '#efefefaa', fontSize: 40 }} onPress={this.addTask} />
+                    <Button transparent light onPress={() => this.setState({ addTask: false })}>
+                      <Text>X</Text>
+                    </Button>
+                    {/* <Icon type="MaterialIcons" name="add-box" style={{ color: '#efefefaa', fontSize: 40 }} onPress={this.addTask} /> */}
                   </Right>
                 </View>
-              <View style={{ ...styles.addItem, marginTop: 0}}>
-                <Badge style={{ alignSelf: 'center', backgroundColor: "#ffec3d" }}></Badge>
-                <Text style={{ color: '#efefef', fontWeight: this.state.inputTaskSev === 'small' ? 'bold' : '' }} onPress={() => this.setState({ inputTaskSev: 'small'})}>Small</Text>
-                <Badge style={{ alignSelf: 'center', backgroundColor: "#ffa940" }}></Badge>
-                <Text style={{ color: '#efefef', fontWeight: this.state.inputTaskSev === 'medium' ? 'bold' : '' }} onPress={() => this.setState({ inputTaskSev: 'medium' })}>Medium</Text>
-                <Badge style={{ alignSelf: 'center', backgroundColor: "#ff4d4f" }}></Badge>
-                <Text style={{ color: '#efefef', fontWeight: this.state.inputTaskSev === 'large' ? 'bold' : '' }} onPress={() => this.setState({ inputTaskSev: 'large' })}>Large</Text>
+                <View style={{ ...styles.addItem, marginTop: 0}}>
+                  <Picker
+                    note
+                    mode="dropdown"
+                    style={{ width: 120 }}
+                    selectedValue={this.state.inputTaskSev}
+                    onValueChange={(val) => this.setState({ inputTaskSev: val })}
+                  >
+                    <Picker.Item label="Small" value="small" />
+                    <Picker.Item label="Medium" value="medium" />
+                    <Picker.Item label="Large" value="large" />
+                  </Picker>
+                  <Button info onPress={this.addTask}>
+                    <Text>Add Task</Text>
+                  </Button> 
                 </View>
               </View>
             }
           </List>
-          <View style={styles.deleteText}>
-            <Text style={{ color: '#01010155' }}>Long click to delete</Text>
-          </View>
+          {this.state.todaysTasks.length != 0 && 
+            <View style={styles.deleteText}>
+              <Text style={{ color: '#01010155' }}>Long click to delete</Text>
+            </View>
+          }
           
           
         </Content>
+        {!this.state.addTask &&
         <Button style={styles.floatingButton} 
           onPress={() => {
             this.setState(({ addTask }) => ({ addTask: !addTask }))
           }}>
           <Icon name='add' />
-        </Button>
+        </Button>}
       </Container>
     )
   }
